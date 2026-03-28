@@ -1,0 +1,143 @@
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+:root {
+  --bg:    #04040b;
+  --surf:  #0a0a15;
+  --surf2: #10101e;
+  --surf3: #16162a;
+  --bdr:   #1c1c30;
+  --bdr2:  #2e2e50;
+  --text:  #dde2f0;
+  --muted: #5a6080;
+  --faint: #12121e;
+  --acc:   #7c3aed;
+  --acc2:  #06b6d4;
+  --spring: cubic-bezier(.34,1.56,.64,1);
+  --ease:   cubic-bezier(.22,1,.36,1);
+  --r: 16px;
+}
+
+html {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px }
+::-webkit-scrollbar-track { background: transparent }
+::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 99px }
+
+/* ─── PAGE TRANSITIONS ─── */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity .25s var(--ease), transform .25s var(--ease);
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* ─── MODAL TRANSITIONS ─── */
+.modal-enter-active { transition: all .28s var(--spring) }
+.modal-leave-active { transition: all .2s var(--ease) }
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(.94) translateY(10px);
+}
+
+.backdrop-enter-active { transition: all .2s ease }
+.backdrop-leave-active { transition: all .18s ease }
+.backdrop-enter-from,
+.backdrop-leave-to { opacity: 0 }
+
+/* ─── CARD LIST TRANSITIONS ─── */
+.card-list-enter-active {
+  transition: all .45s var(--spring);
+}
+.card-list-leave-active {
+  transition: all .25s var(--ease);
+  position: absolute;
+}
+.card-list-enter-from {
+  opacity: 0;
+  transform: scale(.7) rotate(4deg);
+}
+.card-list-leave-to {
+  opacity: 0;
+  transform: scale(.7) rotate(-4deg);
+}
+
+/* ─── GLOBAL KEYFRAMES ─── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px var(--acc), 0 0 30px color-mix(in srgb, var(--acc) 50%, transparent) }
+  50%       { box-shadow: 0 0 22px var(--acc), 0 0 60px color-mix(in srgb, var(--acc) 70%, transparent) }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center }
+  100% { background-position:  200% center }
+}
+
+/* Shimmer pass for section header accent line */
+@keyframes shimmer-pass {
+  0%   { opacity: 0.6; box-shadow: 0 0 8px var(--cat-c, var(--acc)) }
+  50%  { opacity: 1;   box-shadow: 0 0 20px var(--cat-c, var(--acc)), 0 0 40px color-mix(in srgb, var(--cat-c, var(--acc)) 50%, transparent) }
+  100% { opacity: 0.6; box-shadow: 0 0 8px var(--cat-c, var(--acc)) }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) }
+  50%       { transform: translateY(-4px) }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0) }
+  20%       { transform: translateX(-8px) }
+  40%       { transform: translateX( 8px) }
+  60%       { transform: translateX(-5px) }
+  80%       { transform: translateX( 5px) }
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(18px) scale(.96) }
+  to   { opacity: 1; transform: none }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-16px) }
+  to   { opacity: 1; transform: none }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px) }
+  to   { opacity: 1; transform: none }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg) }
+}
+
+/* Aurora gentle pulse for canvas layers */
+@keyframes aurora-drift {
+  0%, 100% { opacity: 0.6 }
+  50%       { opacity: 1 }
+}
+
+/* Portal ring expand */
+@keyframes ring-expand {
+  from { transform: scale(0); opacity: 0.9 }
+  to   { transform: scale(2); opacity: 0 }
+}
