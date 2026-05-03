@@ -6,10 +6,10 @@
         <div class="brand-name" ref="nameEl">coolserver</div>
         <div class="brand-sub">home dashboard</div>
       </div>
+      <span class="season-badge" :title="season.name">{{ season.icon }}</span>
     </div>
     <div class="hdr-right">
       <button class="btn" @click="onReset" title="Reset to defaults">↺ Reset</button>
-      <button class="btn" @click="onLogout" title="Sign out">⎋ Logout</button>
     </div>
   </header>
 </template>
@@ -18,27 +18,20 @@
 import { ref, onMounted } from 'vue'
 import { gsap } from 'gsap'
 import { useDashboardStore } from '../stores/dashboard'
+import { useSeason } from '../composables/useSeason'
 
 const store    = useDashboardStore()
 const headerEl = ref(null)
 const nameEl   = ref(null)
-
-const emit = defineEmits(['logout'])
+const season   = useSeason()
 
 function onReset() {
   if (confirm('Reset everything to defaults?')) store.resetData()
 }
 
-function onLogout() {
-  emit('logout')
-}
-
 onMounted(() => {
-  gsap.from(headerEl.value, {
-    y: -20, opacity: 0, duration: 0.5, ease: 'power2.out', delay: 0.05,
-  })
+  gsap.from(headerEl.value, { y: -20, opacity: 0, duration: 0.5, ease: 'power2.out', delay: 0.05 })
 
-  // Periodic brand glitch every ~9 seconds
   function scheduleGlitch() {
     const delay = 7 + Math.random() * 5
     gsap.delayedCall(delay, () => {
@@ -98,10 +91,15 @@ onMounted(() => {
   margin-top: 1px;
 }
 
-.hdr-right {
-  display: flex;
-  gap: 0.5rem;
+.season-badge {
+  font-size: 1rem;
+  opacity: 0.7;
+  cursor: default;
+  transition: opacity 0.2s, transform 0.2s;
 }
+.season-badge:hover { opacity: 1; transform: scale(1.2) }
+
+.hdr-right { display: flex; gap: 0.5rem }
 
 .btn {
   display: inline-flex;
@@ -120,13 +118,6 @@ onMounted(() => {
   white-space: nowrap;
   font-family: inherit;
 }
-
-.btn:hover {
-  background: var(--surf2);
-  border-color: var(--bdr2);
-  color: var(--text);
-  transform: translateY(-1px);
-}
-
+.btn:hover { background: var(--surf2); border-color: var(--bdr2); color: var(--text); transform: translateY(-1px) }
 .btn:active { transform: scale(0.97) }
 </style>

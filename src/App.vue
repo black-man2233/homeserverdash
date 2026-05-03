@@ -1,16 +1,20 @@
 <template>
-  <CursorGlow />
   <AmbientFX />
   <EasterEggs />
-  <RouterView v-slot="{ Component }">
-    <Transition name="page" mode="out-in">
-      <component :is="Component" />
-    </Transition>
-  </RouterView>
+  <RouterView />
 </template>
 
 <script setup>
-import CursorGlow  from './components/CursorGlow.vue'
-import AmbientFX   from './components/AmbientFX.vue'
-import EasterEggs  from './components/EasterEggs.vue'
+import { onMounted } from 'vue'
+import AmbientFX  from './components/AmbientFX.vue'
+import EasterEggs from './components/EasterEggs.vue'
+import { useSeason } from './composables/useSeason'
+
+onMounted(() => {
+  const s = useSeason()
+  const root = document.documentElement
+  root.style.setProperty('--acc',  s.acc)
+  root.style.setProperty('--acc2', s.acc2)
+  root.dataset.season = s.name
+})
 </script>
