@@ -3,5 +3,5 @@ services:
     build: .
     container_name: dashboard
     ports:
-      - "3020:80"
+      - "8020:80"
     restart: unless-stopped
