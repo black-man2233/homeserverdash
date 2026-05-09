@@ -2,207 +2,140 @@
   <div
     class="card"
     :class="{ dead }"
-    :style="`--c:${color};--cg:${color}18`"
+    :style="`--c: ${color}`"
     @click="onClick"
-    @mousemove="onMouseMove"
-    @mouseleave="onMouseLeave"
-    ref="cardEl"
   >
-    <div class="spot" />
-
-    <div class="cactions" @click.stop>
-      <button class="caction-btn" title="Edit"   @click="emit('edit',   service.id)">✏</button>
-      <button class="caction-btn del" title="Delete" @click="emit('delete', service.id)">✕</button>
+    <div class="card-actions" @click.stop>
+      <button class="act-btn" title="Edit"   @click="emit('edit',   service.id)">✏</button>
+      <button class="act-btn del" title="Delete" @click="emit('delete', service.id)">✕</button>
     </div>
 
-    <div class="cicon">{{ service.icon }}</div>
-    <div class="cname">{{ service.name }}</div>
-    <div class="cfoot">
-      <span v-if="net === 'cf' && !service.cf" class="cbadge warn">not exposed</span>
-      <span v-else-if="net === 'cf'"            class="cbadge">{{ service.cf }}.{{ cfg.cf }}</span>
-      <span v-else                               class="cbadge">:{{ service.port }}</span>
-      <span v-if="!dead" class="carr">↗</span>
+    <div class="card-icon">
+      <Icon v-if="isIconify" :icon="service.icon" width="26" height="26" />
+      <span v-else class="emoji-icon">{{ service.icon }}</span>
+    </div>
+
+    <div class="card-name">{{ service.name }}</div>
+
+    <div class="card-foot">
+      <span v-if="net === 'cf' && !service.cf" class="badge warn">no cf</span>
+      <span v-else-if="net === 'cf'"            class="badge">{{ service.cf }}.{{ cfg.cf }}</span>
+      <span v-else                               class="badge">:{{ service.port }}</span>
+      <span v-if="!dead" class="arr">↗</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { gsap } from 'gsap'
+import { computed } from 'vue'
+import { Icon } from '@iconify/vue'
 import { CFG } from '../config'
 
 const props = defineProps({
-  service: { type: Object, required: true },
-  href:    { type: String, default: null },
+  service: { type: Object,  required: true },
+  href:    { type: String,  default: null  },
   dead:    { type: Boolean, default: false },
-  color:   { type: String, default: '#7c3aed' },
-  net:     { type: String, default: 'local' },
+  color:   { type: String,  default: '#64748b' },
+  net:     { type: String,  default: 'local' },
 })
 
 const emit = defineEmits(['edit', 'delete', 'launch'])
-const cardEl = ref(null)
-const cfg = CFG
+const cfg  = CFG
+
+const isIconify = computed(() => props.service.icon?.includes(':'))
 
 function onClick() {
   if (props.dead || !props.href) return
-  const r = cardEl.value.getBoundingClientRect()
-
-  // Click squish then emit
-  gsap.to(cardEl.value, {
-    scale: 0.93, duration: 0.08, ease: 'power2.in',
-    onComplete: () => {
-      gsap.to(cardEl.value, { scale: 1, duration: 0.3, ease: 'back.out(2)' })
-    }
-  })
-
-  emit('launch', {
-    href:  props.href,
-    x:     r.left + r.width  / 2,
-    y:     r.top  + r.height / 2,
-    color: props.color,
-  })
-}
-
-function onMouseMove(e) {
-  if (props.dead) return
-  const r = cardEl.value.getBoundingClientRect()
-  const x = e.clientX - r.left
-  const y = e.clientY - r.top
-  cardEl.value.style.setProperty('--mx', (x / r.width  * 100).toFixed(1) + '%')
-  cardEl.value.style.setProperty('--my', (y / r.height * 100).toFixed(1) + '%')
-  const dx = (x - r.width  / 2) / r.width  * 2
-  const dy = (y - r.height / 2) / r.height * 2
-  cardEl.value.style.transform = `perspective(700px) rotateY(${dx * 8}deg) rotateX(${-dy * 8}deg) translateY(-4px) scale(1.02)`
-}
-
-function onMouseLeave() {
-  if (props.dead) return
-  gsap.to(cardEl.value, { rotateX: 0, rotateY: 0, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.4)', clearProps: 'transform' })
+  emit('launch', { href: props.href })
 }
 </script>
 
 <style scoped>
 .card {
   --c: var(--acc);
-  --cg: #7c3aed18;
+
   position: relative;
-  overflow: hidden;
   background: var(--surf);
   border: 1px solid var(--bdr);
+  border-left: 3px solid var(--c);
   border-radius: var(--r);
-  padding: 1.1rem 1rem 1rem;
+  padding: 1rem 0.875rem 0.875rem;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.5rem;
+  min-height: 120px;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.25s ease, background 0.2s ease;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1.5px;
-  background: linear-gradient(90deg, transparent, var(--c), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .card:not(.dead):hover {
-  border-color: var(--c);
   background: var(--surf2);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 20%, transparent),
-              0 8px 32px var(--cg);
+  border-color: var(--bdr2);
 }
 
-.card:not(.dead):hover::before { opacity: 1 }
-.card.dead { opacity: 0.3; cursor: default }
-
-/* Spotlight */
-.spot {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), var(--cg) 0%, transparent 65%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-.card:not(.dead):hover .spot { opacity: 1 }
+.card.dead { opacity: 0.35; cursor: default }
 
 /* Actions */
-.cactions {
+.card-actions {
   position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
-  display: flex;
-  gap: 0.3rem;
-  z-index: 10;
+  top: 0.5rem; right: 0.5rem;
+  display: flex; gap: 0.2rem;
   opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.15s;
   pointer-events: none;
 }
-.card:hover .cactions { opacity: 1; transform: translateY(0); pointer-events: all }
+.card:hover .card-actions { opacity: 1; pointer-events: all }
 
-.caction-btn {
-  width: 26px; height: 26px;
-  border-radius: 8px;
-  border: 1px solid var(--bdr2);
+.act-btn {
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  border: 1px solid var(--bdr);
   background: var(--surf2);
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s ease;
+  transition: color 0.15s, border-color 0.15s;
 }
-.caction-btn:hover { background: var(--surf); color: var(--text); transform: scale(1.1) }
-.caction-btn.del:hover { border-color: #dc262640; color: #f87171; background: #dc262610 }
+.act-btn:hover { color: var(--text) }
+.act-btn.del:hover { color: #f87171; border-color: rgba(220,38,38,0.4) }
 
-/* Content */
-.cicon {
-  font-size: 1.7rem;
+.card-icon {
+  color: var(--c);
   line-height: 1;
-  position: relative;
-  z-index: 1;
-  transition: transform 0.3s var(--spring);
 }
-.card:not(.dead):hover .cicon { transform: scale(1.15) }
+.emoji-icon { font-size: 1.6rem }
 
-.cname {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  position: relative;
-  z-index: 1;
+.card-name {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
 }
 
-.cfoot {
+.card-foot {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   margin-top: auto;
-  position: relative;
-  z-index: 1;
 }
 
-.cbadge {
-  font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
-  font-size: 0.63rem;
+.badge {
+  font-family: ui-monospace, monospace;
+  font-size: 0.6rem;
   color: var(--muted);
-  background: var(--faint);
-  padding: 0.18rem 0.45rem;
-  border-radius: 6px;
-  letter-spacing: 0.02em;
+  background: var(--bdr);
+  padding: 0.12rem 0.35rem;
+  border-radius: 4px;
 }
-.cbadge.warn { color: #f97316aa; background: #f9731610 }
+.badge.warn { color: #f97316; background: rgba(249,115,22,0.1) }
 
-.carr {
+.arr {
   margin-left: auto;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--muted);
   opacity: 0;
-  transition: opacity 0.2s, transform 0.2s var(--spring);
+  transition: opacity 0.15s;
 }
-.card:not(.dead):hover .carr { opacity: 1; transform: translate(2px, -2px) }
+.card:not(.dead):hover .arr { opacity: 1 }
 </style>

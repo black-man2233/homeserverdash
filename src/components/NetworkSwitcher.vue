@@ -1,113 +1,59 @@
 <template>
-  <div class="switcher" ref="switcherEl">
-    <div class="pill-track" ref="trackEl">
-      <div class="pill-thumb" ref="thumbEl" />
-      <label
-        v-for="(opt, i) in OPTIONS"
-        :key="opt.value"
-        class="pill-opt"
-        :class="{ active: store.net === opt.value }"
-        @click="select(i, opt.value)"
-      >
-        {{ opt.label }}
-      </label>
-    </div>
+  <div class="net-switcher">
+    <button
+      v-for="opt in OPTIONS"
+      :key="opt.value"
+      class="net-pill"
+      :class="{ active: store.net === opt.value }"
+      @click="store.net = opt.value"
+    >
+      {{ opt.label }}
+    </button>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { gsap } from 'gsap'
 import { useDashboardStore } from '../stores/dashboard'
 
 const store = useDashboardStore()
-const switcherEl = ref(null)
-const trackEl    = ref(null)
-const thumbEl    = ref(null)
 
 const OPTIONS = [
   { label: '🏠 Local',     value: 'local' },
   { label: '🔒 Tailscale', value: 'ts'    },
   { label: '☁️ Live',      value: 'cf'    },
 ]
-
-function movePill() {
-  nextTick(() => {
-    const idx = OPTIONS.findIndex(o => o.value === store.net)
-    const opts = trackEl.value?.querySelectorAll('.pill-opt')
-    if (!opts || !thumbEl.value) return
-    const tR = trackEl.value.getBoundingClientRect()
-    const oR = opts[idx].getBoundingClientRect()
-    gsap.to(thumbEl.value, {
-      width: oR.width,
-      x: oR.left - tR.left - 4,
-      duration: 0.38,
-      ease: 'back.out(1.8)',
-    })
-  })
-}
-
-function select(i, value) {
-  store.net = value
-  movePill()
-}
-
-onMounted(() => {
-  gsap.from(switcherEl.value, {
-    y: -10, opacity: 0, scale: 0.92, duration: 0.5,
-    ease: 'back.out(2)', delay: 0.1,
-  })
-  setTimeout(movePill, 100)
-  window.addEventListener('resize', movePill)
-})
 </script>
 
 <style scoped>
-.switcher {
+.net-switcher {
   display: flex;
-  justify-content: center;
-  margin-bottom: 3rem;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
 }
 
-.pill-track {
-  position: relative;
-  display: inline-flex;
-  background: var(--surf);
-  border: 1px solid var(--bdr);
-  border-radius: 999px;
-  padding: 4px;
-  gap: 2px;
-}
-
-.pill-thumb {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  height: calc(100% - 8px);
-  background: linear-gradient(135deg, var(--acc), #4f46e5);
-  border-radius: 999px;
-  box-shadow: 0 0 16px color-mix(in srgb, var(--acc) 60%, transparent);
-  pointer-events: none;
-  will-change: transform, width;
-}
-
-.pill-opt {
-  position: relative;
-  z-index: 1;
-  padding: 0.45rem 1.25rem;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
+.net-pill {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--muted);
-  transition: color 0.2s ease;
-  user-select: none;
-  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.pill-opt.active { color: #fff }
+.net-pill:hover { background: rgba(255,255,255,0.05); color: var(--text) }
 
-@media (max-width: 640px) {
-  .pill-opt { padding: 0.4rem 0.9rem; font-size: 0.77rem }
+.net-pill.active {
+  background: color-mix(in srgb, var(--acc) 15%, transparent);
+  border-color: color-mix(in srgb, var(--acc) 30%, transparent);
+  color: var(--acc);
 }
 </style>

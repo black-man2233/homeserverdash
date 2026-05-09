@@ -57,35 +57,34 @@ function onSubmit() {
 <style scoped>
 .overlay {
   position: fixed; inset: 0; z-index: 100;
-  background: #000000cc; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center; padding: 1rem;
 }
 .modal {
   background: var(--surf); border: 1px solid var(--bdr2);
-  border-radius: 20px; padding: 1.75rem; width: 100%; max-width: 420px;
-  box-shadow: 0 24px 80px #00000080;
+  border-radius: 14px; padding: 1.5rem; width: 100%; max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 .modal-sm { max-width: 340px }
-.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem }
-.modal-head h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em }
-.close-x { background: none; border: none; color: var(--muted); font-size: 1.3rem; cursor: pointer; padding: 0.2rem; line-height: 1; transition: color 0.15s }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem }
+.modal-head h2 { font-size: 0.95rem; font-weight: 700 }
+.close-x { background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; line-height: 1; transition: color 0.15s }
 .close-x:hover { color: var(--text) }
-.field { margin-bottom: 1rem }
-.field label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.45rem }
+.field { margin-bottom: 0.875rem }
+.field label { display: block; font-size: 0.68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem }
 .field input {
-  width: 100%; background: var(--surf2); border: 1px solid var(--bdr);
-  border-radius: 10px; padding: 0.55rem 0.8rem; color: var(--text);
-  font-size: 0.875rem; font-family: inherit;
-  transition: border-color 0.15s, box-shadow 0.15s; outline: none;
+  width: 100%; background: var(--bg); border: 1px solid var(--bdr);
+  border-radius: var(--r-sm); padding: 0.48rem 0.7rem; color: var(--text);
+  font-size: 0.82rem; font-family: inherit; outline: none; transition: border-color 0.15s;
 }
-.field input:focus { border-color: var(--acc); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 20%, transparent) }
+.field input:focus { border-color: var(--acc) }
 .field input::placeholder { color: var(--muted) }
-.field input[type=color] { padding: 0.35rem 0.5rem; height: 38px; cursor: pointer; border-radius: 8px }
+.field input[type=color] { padding: 0.3rem 0.4rem; height: 36px; cursor: pointer }
 .field-row { display: flex; gap: 0.5rem }
 .field-row .field { flex: 1; margin-bottom: 0 }
-.form-actions { display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--bdr) }
-.btn { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--bdr); background: var(--surf); color: var(--muted); border-radius: 10px; padding: 0.42rem 0.85rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.18s ease; font-family: inherit }
-.btn:hover { background: var(--surf2); border-color: var(--bdr2); color: var(--text) }
-.btn-prime { background: linear-gradient(135deg, var(--acc), #5b21b6); border-color: transparent; color: #fff; box-shadow: 0 4px 20px color-mix(in srgb, var(--acc) 50%, transparent) }
-.btn-prime:hover { filter: brightness(1.1) }
+.form-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.25rem; padding-top: 0.875rem; border-top: 1px solid var(--bdr) }
+.btn { display: inline-flex; align-items: center; border: 1px solid var(--bdr); background: var(--bg); color: var(--muted); border-radius: var(--r-sm); padding: 0.4rem 0.8rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s, color 0.15s }
+.btn:hover { background: var(--bdr); color: var(--text) }
+.btn-prime { background: var(--acc); border-color: transparent; color: #fff }
+.btn-prime:hover { opacity: 0.85 }
 </style>

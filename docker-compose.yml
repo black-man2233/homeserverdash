@@ -4,4 +4,6 @@ services:
     container_name: dashboard
     ports:
       - "8020:80"
+    volumes:
+      - ./services.json:/usr/share/nginx/html/services.json:ro
     restart: unless-stopped

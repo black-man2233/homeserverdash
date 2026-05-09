@@ -10,11 +10,35 @@
             </div>
 
             <form @submit.prevent="onSubmit">
-              <div class="field-row">
-                <div class="field" style="flex: 0 0 80px">
-                  <label>Icon</label>
-                  <input v-model="form.icon" type="text" placeholder="📡" maxlength="4">
+              <!-- Icon picker -->
+              <div class="field">
+                <label>Icon</label>
+                <div class="icon-row">
+                  <div class="icon-preview">
+                    <Icon v-if="isIconifyIcon" :icon="form.icon" width="22" height="22" />
+                    <span v-else>{{ form.icon || '?' }}</span>
+                  </div>
+                  <input v-model="form.icon" type="text" class="icon-input" placeholder="simple-icons:jellyfin or lucide:server" @input="iconSearch = ''">
                 </div>
+                <div class="icon-search-row">
+                  <input v-model="iconSearch" type="text" class="search-input" placeholder="Search icons…">
+                </div>
+                <div class="icon-grid">
+                  <button
+                    v-for="ic in filteredPresets"
+                    :key="ic.name"
+                    type="button"
+                    class="icon-chip"
+                    :class="{ active: form.icon === ic.name }"
+                    :title="ic.label"
+                    @click="form.icon = ic.name"
+                  >
+                    <Icon :icon="ic.name" width="18" height="18" />
+                  </button>
+                </div>
+              </div>
+
+              <div class="field-row">
                 <div class="field">
                   <label>Name</label>
                   <input v-model="form.name" type="text" placeholder="My Service" required>
@@ -50,7 +74,7 @@
               </div>
 
               <div class="field">
-                <label>Cloudflare Subdomain <small>optional — prefix for bamwesa.org</small></label>
+                <label>Cloudflare Subdomain <small>optional</small></label>
                 <input v-model="form.cf" type="text" placeholder="myservice">
               </div>
 
@@ -67,7 +91,8 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import { reactive, ref, computed, watch } from 'vue'
+import { Icon } from '@iconify/vue'
 import { useDashboardStore } from '../../stores/dashboard'
 
 const props = defineProps({
@@ -78,24 +103,96 @@ const emit  = defineEmits(['close', 'saved'])
 const store = useDashboardStore()
 const isEdit = computed(() => !!props.service)
 
-import { computed } from 'vue'
-
-const form = reactive({ icon: '', name: '', catId: '', port: '', path: '', cf: '' })
+const form   = reactive({ icon: 'lucide:server', name: '', catId: '', port: '', path: '', cf: '' })
 const newCat = reactive({ label: '', icon: '📁', color: '#7c3aed' })
+const iconSearch = ref('')
+
+const isIconifyIcon = computed(() => form.icon?.includes(':'))
+
+// All verified to exist via Iconify API
+const PRESETS = [
+  // Media — simple-icons verified
+  { name: 'simple-icons:jellyfin',      label: 'Jellyfin' },
+  { name: 'simple-icons:plex',          label: 'Plex' },
+  { name: 'simple-icons:kodi',          label: 'Kodi' },
+  { name: 'simple-icons:sonarr',        label: 'Sonarr' },
+  { name: 'simple-icons:radarr',        label: 'Radarr' },
+  { name: 'simple-icons:transmission',  label: 'Transmission' },
+  { name: 'simple-icons:qbittorrent',   label: 'qBittorrent' },
+  // Media — lucide fallbacks (no simple-icon exists)
+  { name: 'lucide:disc-3',              label: 'Lidarr' },
+  { name: 'lucide:search',              label: 'Prowlarr' },
+  { name: 'lucide:music-2',             label: 'Navidrome' },
+  { name: 'lucide:captions',            label: 'Bazarr' },
+  { name: 'lucide:radio',               label: 'Restreamer' },
+  { name: 'lucide:music',               label: 'Music' },
+  // Monitoring — verified
+  { name: 'simple-icons:uptimekuma',    label: 'Uptime Kuma' },
+  { name: 'simple-icons:netdata',       label: 'Netdata' },
+  { name: 'simple-icons:grafana',       label: 'Grafana' },
+  { name: 'simple-icons:prometheus',    label: 'Prometheus' },
+  { name: 'lucide:hard-drive',          label: 'Scrutiny' },
+  { name: 'lucide:monitor-dot',         label: 'Beszel' },
+  { name: 'lucide:chart-no-axes-column',label: 'GoAccess' },
+  { name: 'lucide:activity',            label: 'Activity' },
+  // Network — verified
+  { name: 'simple-icons:pihole',        label: 'Pi-hole' },
+  { name: 'simple-icons:adguard',       label: 'AdGuard' },
+  { name: 'simple-icons:nginx',         label: 'Nginx' },
+  { name: 'simple-icons:traefikproxy',  label: 'Traefik' },
+  { name: 'simple-icons:cloudflare',    label: 'Cloudflare' },
+  { name: 'simple-icons:wireguard',     label: 'WireGuard' },
+  { name: 'simple-icons:tailscale',     label: 'Tailscale' },
+  { name: 'simple-icons:portainer',     label: 'Portainer' },
+  // Photos / Files — verified
+  { name: 'simple-icons:immich',        label: 'Immich' },
+  { name: 'simple-icons:nextcloud',     label: 'Nextcloud' },
+  { name: 'simple-icons:syncthing',     label: 'Syncthing' },
+  // Books
+  { name: 'lucide:book-open',           label: 'Kavita' },
+  { name: 'lucide:library',             label: 'Booklore' },
+  // Infra — verified
+  { name: 'simple-icons:docker',        label: 'Docker' },
+  { name: 'simple-icons:gitea',         label: 'Gitea' },
+  { name: 'simple-icons:homeassistant', label: 'Home Assistant' },
+  { name: 'simple-icons:vaultwarden',   label: 'Vaultwarden' },
+  { name: 'simple-icons:bitwarden',     label: 'Bitwarden' },
+  { name: 'simple-icons:mariadb',       label: 'MariaDB' },
+  // Generic lucide
+  { name: 'lucide:server',              label: 'Server' },
+  { name: 'lucide:database',            label: 'Database' },
+  { name: 'lucide:globe',               label: 'Globe' },
+  { name: 'lucide:shield',              label: 'Shield' },
+  { name: 'lucide:cpu',                 label: 'CPU' },
+  { name: 'lucide:camera',              label: 'Camera' },
+  { name: 'lucide:film',                label: 'Film' },
+  { name: 'lucide:image',               label: 'Images' },
+  { name: 'lucide:lock',                label: 'Lock' },
+  { name: 'lucide:terminal',            label: 'Terminal' },
+  { name: 'lucide:bot',                 label: 'AI / Bot' },
+  { name: 'lucide:tag',                 label: 'Tag' },
+]
+
+const filteredPresets = computed(() => {
+  if (!iconSearch.value) return PRESETS
+  const q = iconSearch.value.toLowerCase()
+  return PRESETS.filter(p => p.label.toLowerCase().includes(q) || p.name.includes(q))
+})
 
 watch(() => props.show, (v) => {
   if (!v) return
+  iconSearch.value = ''
   if (props.service) {
     Object.assign(form, {
-      icon: props.service.icon,
-      name: props.service.name,
+      icon:  props.service.icon,
+      name:  props.service.name,
       catId: props.service.cat,
-      port: props.service.port,
-      path: props.service.path || '',
-      cf:   props.service.cf   || '',
+      port:  props.service.port,
+      path:  props.service.path || '',
+      cf:    props.service.cf   || '',
     })
   } else {
-    Object.assign(form, { icon: '', name: '', catId: store.cats[0]?.id || '', port: '', path: '', cf: '' })
+    Object.assign(form, { icon: 'lucide:server', name: '', catId: store.cats[0]?.id || '', port: '', path: '', cf: '' })
     Object.assign(newCat, { label: '', icon: '📁', color: '#7c3aed' })
   }
 })
@@ -109,12 +206,9 @@ function onSubmit() {
   if (catId === '__new') {
     catId = store.addCat({ label: newCat.label || 'Custom', icon: newCat.icon, color: newCat.color })
   }
-
-  const data = { cat: catId, icon: form.icon || '🔧', name: form.name, port: form.port, path: form.path, cf: form.cf }
-
+  const data = { cat: catId, icon: form.icon || 'lucide:server', name: form.name, port: form.port, path: form.path, cf: form.cf }
   if (props.service) store.editSvc(props.service.id, data)
   else               store.addSvc(data)
-
   emit('saved')
   emit('close')
 }
@@ -123,77 +217,126 @@ function onSubmit() {
 <style scoped>
 .overlay {
   position: fixed; inset: 0; z-index: 100;
-  background: #000000cc;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center; padding: 1rem;
 }
 
 .modal {
   background: var(--surf);
   border: 1px solid var(--bdr2);
-  border-radius: 20px;
-  padding: 1.75rem;
-  width: 100%; max-width: 420px;
-  box-shadow: 0 24px 80px #00000080;
+  border-radius: 14px;
+  padding: 1.5rem;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-head {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
-.modal-head h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em }
+.modal-head h2 { font-size: 0.95rem; font-weight: 700 }
 
 .close-x {
   background: none; border: none; color: var(--muted);
-  font-size: 1.3rem; cursor: pointer; padding: 0.2rem; line-height: 1;
+  font-size: 1.2rem; cursor: pointer; line-height: 1;
   transition: color 0.15s;
 }
 .close-x:hover { color: var(--text) }
 
-.field { margin-bottom: 1rem }
+.field { margin-bottom: 0.875rem }
 .field label {
-  display: block; font-size: 0.72rem; font-weight: 600;
-  color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em;
-  margin-bottom: 0.45rem;
+  display: block; font-size: 0.68rem; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
 }
-.field label small { font-size: 0.68rem; font-weight: 400; text-transform: none; letter-spacing: 0; opacity: 0.7 }
+.field label small { font-size: 0.65rem; font-weight: 400; text-transform: none; opacity: 0.7 }
+
 .field input, .field select {
-  width: 100%; background: var(--surf2); border: 1px solid var(--bdr);
-  border-radius: 10px; padding: 0.55rem 0.8rem; color: var(--text);
-  font-size: 0.875rem; font-family: inherit;
-  transition: border-color 0.15s, box-shadow 0.15s; outline: none;
+  width: 100%; background: var(--bg); border: 1px solid var(--bdr);
+  border-radius: var(--r-sm); padding: 0.48rem 0.7rem; color: var(--text);
+  font-size: 0.82rem; font-family: inherit;
+  transition: border-color 0.15s; outline: none;
 }
-.field input:focus, .field select:focus {
-  border-color: var(--acc);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 20%, transparent);
-}
+.field input:focus, .field select:focus { border-color: var(--acc) }
 .field input::placeholder { color: var(--muted) }
-.field select option { background: var(--surf2) }
-.field input[type=color] { padding: 0.35rem 0.5rem; height: 38px; cursor: pointer; border-radius: 8px }
+.field select option { background: var(--surf) }
+.field input[type=color] { padding: 0.3rem 0.4rem; height: 36px; cursor: pointer }
 
 .field-row { display: flex; gap: 0.5rem }
 .field-row .field { flex: 1; margin-bottom: 0 }
 
+/* Icon picker */
+.icon-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.icon-preview {
+  width: 36px; height: 36px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--bdr);
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--acc);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.icon-input { flex: 1 }
+
+.icon-search-row { margin-bottom: 0.5rem }
+.search-input {
+  width: 100%; background: var(--bg); border: 1px solid var(--bdr);
+  border-radius: var(--r-sm); padding: 0.4rem 0.7rem; color: var(--text);
+  font-size: 0.8rem; font-family: inherit; outline: none;
+}
+.search-input:focus { border-color: var(--acc) }
+.search-input::placeholder { color: var(--muted) }
+
+.icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.icon-chip {
+  width: 34px; height: 34px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--bdr);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.icon-chip:hover { color: var(--text); border-color: var(--bdr2) }
+.icon-chip.active { border-color: var(--acc); color: var(--acc); background: var(--surf2) }
+
+/* Form actions */
 .form-actions {
-  display: flex; gap: 0.6rem; justify-content: flex-end;
-  margin-top: 1.5rem; padding-top: 1rem;
+  display: flex; gap: 0.5rem; justify-content: flex-end;
+  margin-top: 1.25rem; padding-top: 0.875rem;
   border-top: 1px solid var(--bdr);
 }
 
 .btn {
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  border: 1px solid var(--bdr); background: var(--surf);
-  color: var(--muted); border-radius: 10px; padding: 0.42rem 0.85rem;
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--bdr); background: var(--bg);
+  color: var(--muted); border-radius: var(--r-sm);
+  padding: 0.4rem 0.8rem;
   font-size: 0.78rem; font-weight: 600; cursor: pointer;
-  transition: all 0.18s ease; white-space: nowrap; font-family: inherit;
+  font-family: inherit; transition: background 0.15s, color 0.15s;
 }
-.btn:hover { background: var(--surf2); border-color: var(--bdr2); color: var(--text) }
+.btn:hover { background: var(--bdr); color: var(--text) }
 
 .btn-prime {
-  background: linear-gradient(135deg, var(--acc), #5b21b6);
-  border-color: transparent; color: #fff;
-  box-shadow: 0 4px 20px color-mix(in srgb, var(--acc) 50%, transparent);
+  background: var(--acc); border-color: transparent; color: #fff;
 }
-.btn-prime:hover { filter: brightness(1.1) }
+.btn-prime:hover { opacity: 0.85 }
 </style>

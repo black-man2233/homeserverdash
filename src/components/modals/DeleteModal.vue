@@ -36,23 +36,23 @@ function onConfirm() {
 <style scoped>
 .overlay {
   position: fixed; inset: 0; z-index: 100;
-  background: #000000cc; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center; padding: 1rem;
 }
 .modal {
   background: var(--surf); border: 1px solid var(--bdr2);
-  border-radius: 20px; padding: 1.75rem; width: 100%; max-width: 420px;
-  box-shadow: 0 24px 80px #00000080;
+  border-radius: 14px; padding: 1.5rem; width: 100%; max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 .modal-sm { max-width: 340px }
-.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem }
-.modal-head h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em }
-.confirm-body { margin-bottom: 1.75rem }
-.confirm-body p { color: var(--muted); font-size: 0.88rem; margin-top: 0.4rem }
+.modal-head { margin-bottom: 0.875rem }
+.modal-head h2 { font-size: 0.95rem; font-weight: 700 }
+.confirm-body { margin-bottom: 1.25rem }
+.confirm-body p { color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem }
 .confirm-body strong { color: var(--text) }
-.form-actions { display: flex; gap: 0.6rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--bdr) }
-.btn { display: inline-flex; align-items: center; border: 1px solid var(--bdr); background: var(--surf); color: var(--muted); border-radius: 10px; padding: 0.42rem 0.85rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.18s ease; font-family: inherit }
-.btn:hover { background: var(--surf2); border-color: var(--bdr2); color: var(--text) }
-.btn-danger { background: linear-gradient(135deg, #dc2626, #991b1b); border-color: transparent; color: #fff; box-shadow: 0 4px 16px #dc262640 }
-.btn-danger:hover { filter: brightness(1.1) }
+.form-actions { display: flex; gap: 0.5rem; justify-content: flex-end; padding-top: 0.875rem; border-top: 1px solid var(--bdr) }
+.btn { display: inline-flex; align-items: center; border: 1px solid var(--bdr); background: var(--bg); color: var(--muted); border-radius: var(--r-sm); padding: 0.4rem 0.8rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s, color 0.15s }
+.btn:hover { background: var(--bdr); color: var(--text) }
+.btn-danger { background: #dc2626; border-color: transparent; color: #fff }
+.btn-danger:hover { opacity: 0.85 }
 </style>

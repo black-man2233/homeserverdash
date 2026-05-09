@@ -1,0 +1,236 @@
+{
+  "config": {
+    "local": "192.168.0.170",
+    "ts": "yourserver",
+    "cf": "yourdomain.com"
+  },
+  "cats": [
+    {
+      "id": "monitoring",
+      "label": "Monitoring",
+      "icon": "lucide:activity",
+      "color": "#22d3ee"
+    },
+    {
+      "id": "network",
+      "label": "Network",
+      "icon": "lucide:network",
+      "color": "#4ade80"
+    },
+    {
+      "id": "media",
+      "label": "Media",
+      "icon": "lucide:film",
+      "color": "#a78bfa"
+    },
+    {
+      "id": "books",
+      "label": "Books",
+      "icon": "lucide:book-open",
+      "color": "#f59e0b"
+    },
+    {
+      "id": "photos",
+      "label": "Photos",
+      "icon": "lucide:image",
+      "color": "#f472b6"
+    },
+    {
+      "id": "ai",
+      "label": "AI",
+      "icon": "lucide:bot",
+      "color": "#fb923c"
+    }
+  ],
+  "services": [
+    {
+      "id": 1777813140207,
+      "cat": "monitoring",
+      "name": "Scrutiny",
+      "icon": "lucide:hard-drive",
+      "port": 3030,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140208,
+      "cat": "monitoring",
+      "name": "Beszel",
+      "icon": "lucide:monitor-dot",
+      "port": 3031,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140209,
+      "cat": "network",
+      "name": "FlareSolverr",
+      "icon": "lucide:shield",
+      "port": 3019,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140210,
+      "cat": "media",
+      "name": "Beets",
+      "icon": "lucide:tag",
+      "port": 3017,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140211,
+      "cat": "network",
+      "name": "Vpn",
+      "icon": "lucide:server",
+      "port": 5032,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140212,
+      "cat": "media",
+      "name": "Prowlarr",
+      "icon": "lucide:search",
+      "port": 3015,
+      "path": "",
+      "cf": "prowlarr"
+    },
+    {
+      "id": 1777813140213,
+      "cat": "media",
+      "name": "Bazarr",
+      "icon": "lucide:captions",
+      "port": 3020,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140214,
+      "cat": "media",
+      "name": "Jellyfin",
+      "icon": "simple-icons:jellyfin",
+      "port": 3011,
+      "path": "",
+      "cf": "jellyfin"
+    },
+    {
+      "id": 1777813140215,
+      "cat": "media",
+      "name": "Sonarr",
+      "icon": "simple-icons:sonarr",
+      "port": 3013,
+      "path": "",
+      "cf": "sonarr"
+    },
+    {
+      "id": 1777813140216,
+      "cat": "media",
+      "name": "Radarr",
+      "icon": "simple-icons:radarr",
+      "port": 3014,
+      "path": "",
+      "cf": "radarr"
+    },
+    {
+      "id": 1777813140217,
+      "cat": "books",
+      "name": "Kavita",
+      "icon": "lucide:book-open",
+      "port": 3022,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140219,
+      "cat": "media",
+      "name": "Lidarr",
+      "icon": "lucide:disc-3",
+      "port": 3010,
+      "path": "",
+      "cf": "lidarr"
+    },
+    {
+      "id": 1777813140220,
+      "cat": "books",
+      "name": "Booklore",
+      "icon": "lucide:library",
+      "port": 6060,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140221,
+      "cat": "network",
+      "name": "Stylesage Client",
+      "icon": "lucide:server",
+      "port": 4500,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140222,
+      "cat": "network",
+      "name": "Stylesage Server",
+      "icon": "lucide:server",
+      "port": 4501,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140223,
+      "cat": "media",
+      "name": "Restreamer",
+      "icon": "lucide:radio",
+      "port": 6000,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140224,
+      "cat": "media",
+      "name": "Navidrome",
+      "icon": "lucide:music-2",
+      "port": 3007,
+      "path": "",
+      "cf": "music"
+    },
+    {
+      "id": 1777813140225,
+      "cat": "network",
+      "name": "Portainer",
+      "icon": "simple-icons:portainer",
+      "port": 9443,
+      "path": "",
+      "cf": "portainer"
+    },
+    {
+      "id": 1777813140226,
+      "cat": "network",
+      "name": "Nginx Proxy Mgr",
+      "icon": "simple-icons:nginx",
+      "port": 443,
+      "path": "",
+      "cf": "npm"
+    },
+    {
+      "id": 1777813140227,
+      "cat": "monitoring",
+      "name": "GoAccess",
+      "icon": "lucide:chart-no-axes-column",
+      "port": 8081,
+      "path": "",
+      "cf": ""
+    },
+    {
+      "id": 1777813140228,
+      "cat": "network",
+      "name": "Sc Dev Dashboard",
+      "icon": "lucide:server",
+      "port": 5174,
+      "path": "",
+      "cf": ""
+    }
+  ]
+}
