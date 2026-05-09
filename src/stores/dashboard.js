@@ -81,7 +81,11 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const net  = ref('local')
 
   // Reactive config — seeded from config.js, overridden by services.json via init()
-  const cfg = ref({ local: CFG_STATIC.local, ts: CFG_STATIC.ts, cf: CFG_STATIC.cf })
+  const cfg = ref({
+    local: CFG_STATIC.local,
+    ts:    CFG_STATIC.ts,
+    live:  { host: CFG_STATIC.live.host, https: CFG_STATIC.live.https, mode: CFG_STATIC.live.mode },
+  })
 
   // Snapshot of services.json services, used by resetData()
   let _jsonCats = null
@@ -91,7 +95,17 @@ export const useDashboardStore = defineStore('dashboard', () => {
     if (data?.config) {
       if (data.config.local) cfg.value.local = data.config.local
       if (data.config.ts)    cfg.value.ts    = data.config.ts
-      if (data.config.cf)    cfg.value.cf    = data.config.cf
+      // New format: live object; legacy: cf string
+      if (data.config.live) {
+        const lv = data.config.live
+        if (typeof lv === 'string') {
+          cfg.value.live = { host: lv, https: true, mode: 'subdomain' }
+        } else {
+          cfg.value.live = { host: '', https: true, mode: 'subdomain', ...lv }
+        }
+      } else if (data.config.cf) {
+        cfg.value.live = { host: data.config.cf, https: true, mode: 'subdomain' }
+      }
     }
     if (data?.cats?.length)     _jsonCats = data.cats
     if (data?.services?.length) _jsonSvcs = data.services
@@ -117,7 +131,13 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
   function svcURL(svc, n) {
     n = n ?? net.value
-    if (n === 'cf') return svc.cf ? `https://${svc.cf}.${cfg.value.cf}${svc.path}` : null
+    if (n === 'live') {
+      const lv = cfg.value.live
+      if (!lv?.host) return null
+      const scheme = lv.https !== false ? 'https' : 'http'
+      if (lv.mode === 'port') return `${scheme}://${lv.host}:${svc.port}${svc.path}`
+      return svc.cf ? `${scheme}://${svc.cf}.${lv.host}${svc.path}` : null
+    }
     return `http://${n === 'local' ? cfg.value.local : cfg.value.ts}:${svc.port}${svc.path}`
   }
 
@@ -129,7 +149,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   persist()
 
   function addSvc(data) {
-    svcs.value.push({ ...data, id: Date.now() })
+    svcs.value.push({ ...data, id: Date.now(), source: 'manual' })
     persist()
   }
 

@@ -18,9 +18,9 @@
     <div class="card-name">{{ service.name }}</div>
 
     <div class="card-foot">
-      <span v-if="net === 'cf' && !service.cf" class="badge warn">no cf</span>
-      <span v-else-if="net === 'cf'"            class="badge">{{ service.cf }}.{{ cfg.cf }}</span>
-      <span v-else                               class="badge">:{{ service.port }}</span>
+      <span v-if="net === 'live' && liveMode === 'subdomain' && !service.cf" class="badge warn">no url</span>
+      <span v-else-if="net === 'live' && liveMode === 'subdomain' && service.cf" class="badge">{{ service.cf }}.{{ liveHost }}</span>
+      <span v-else class="badge">:{{ service.port }}</span>
       <span v-if="!dead" class="arr">↗</span>
     </div>
   </div>
@@ -29,7 +29,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
-import { CFG } from '../config'
+import { useDashboardStore } from '../stores/dashboard'
 
 const props = defineProps({
   service: { type: Object,  required: true },
@@ -39,8 +39,10 @@ const props = defineProps({
   net:     { type: String,  default: 'local' },
 })
 
-const emit = defineEmits(['edit', 'delete', 'launch'])
-const cfg  = CFG
+const emit     = defineEmits(['edit', 'delete', 'launch'])
+const store    = useDashboardStore()
+const liveHost = computed(() => store.cfg.live?.host ?? '')
+const liveMode = computed(() => store.cfg.live?.mode ?? 'subdomain')
 
 const isIconify = computed(() => props.service.icon?.includes(':'))
 

@@ -9,11 +9,15 @@
  *   docker compose up --build -d
  */
 
-// ─── CONFIGURE THESE ────────────────────────────────────────────────────────
+// ─── CONFIGURE THESE (per server) ───────────────────────────────────────────
 const CONFIG = {
-  localIP:   '192.168.0.170',     // LAN IP of your server
-  tsHost:    'yourserver',        // Tailscale hostname (no .ts.net suffix)
-  cfDomain:  'yourdomain.com',    // Cloudflare root domain (e.g. example.com)
+  local: '192.168.0.170',               // LAN IP of this server
+  ts:    'yourserver.tailnet.ts.net',   // Full Tailscale hostname or IP (e.g. 100.x.x.x)
+  live: {
+    host:  'yourdomain.com',            // Root domain or base host for live access
+    https: true,                        // Use HTTPS for live links
+    mode:  'subdomain',                 // 'subdomain' → https://sub.host  |  'port' → https://host:port
+  },
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -120,13 +124,14 @@ function buildServices(containers, existingSvcs) {
       seen.add(meta.name.toLowerCase())
       const existing = existingByName.get(meta.name.toLowerCase())
       services.push({
-        id:   existing?.id   ?? Date.now() + services.length,
-        cat:  existing?.cat  ?? meta.cat,
-        name: existing?.name ?? meta.name,
-        icon: existing?.icon ?? meta.icon,
+        id:     existing?.id   ?? Date.now() + services.length,
+        cat:    existing?.cat  ?? meta.cat,
+        name:   existing?.name ?? meta.name,
+        icon:   existing?.icon ?? meta.icon,
         port,
-        path: existing?.path ?? '',
-        cf:   existing?.cf   ?? meta.cf,
+        path:   existing?.path ?? '',
+        cf:     existing?.cf   ?? meta.cf,
+        source: 'scan',
       })
     } else {
       // Unknown container — add generically under "network"
@@ -134,20 +139,22 @@ function buildServices(containers, existingSvcs) {
       seen.add(displayName.toLowerCase())
       const existing = existingByName.get(displayName.toLowerCase())
       services.push({
-        id:   existing?.id   ?? Date.now() + services.length,
-        cat:  existing?.cat  ?? 'network',
-        name: existing?.name ?? displayName,
-        icon: existing?.icon ?? 'lucide:server',
+        id:     existing?.id   ?? Date.now() + services.length,
+        cat:    existing?.cat  ?? 'network',
+        name:   existing?.name ?? displayName,
+        icon:   existing?.icon ?? 'lucide:server',
         port,
-        path: existing?.path ?? '',
-        cf:   existing?.cf   ?? '',
+        path:   existing?.path ?? '',
+        cf:     existing?.cf   ?? '',
+        source: 'scan',
       })
     }
   }
 
-  // Preserve any existing services that weren't discovered (manually added)
+  // Preserve only manually-added services that weren't found in this docker scan.
+  // scan-sourced services from a previous run (or copied from another machine) are dropped.
   for (const svc of existingSvcs) {
-    if (!seen.has(svc.name.toLowerCase())) {
+    if (!seen.has(svc.name.toLowerCase()) && svc.source !== 'scan') {
       services.push(svc)
     }
   }
@@ -172,9 +179,9 @@ console.log(`Built ${services.length} services`)
 
 const out = {
   config: {
-    local:    CONFIG.localIP,
-    ts:       CONFIG.tsHost,
-    cf:       CONFIG.cfDomain,
+    local: CONFIG.local,
+    ts:    CONFIG.ts,
+    live:  CONFIG.live,
   },
   cats: existing.cats.length ? existing.cats : [
     { id: 'monitoring', label: 'Monitoring', icon: 'lucide:activity',  color: '#22d3ee' },

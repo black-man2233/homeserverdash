@@ -20,7 +20,7 @@ const store = useDashboardStore()
 const OPTIONS = [
   { label: '🏠 Local',     value: 'local' },
   { label: '🔒 Tailscale', value: 'ts'    },
-  { label: '☁️ Live',      value: 'cf'    },
+  { label: '☁️ Live',      value: 'live'  },
 ]
 </script>
 

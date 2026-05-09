@@ -1,8 +1,12 @@
 {
   "config": {
     "local": "192.168.0.170",
-    "ts": "yourserver",
-    "cf": "yourdomain.com"
+    "ts": "hpserver.oryx-cirius.ts.net",
+    "live": {
+      "host": "bamwesa.org",
+      "https": true,
+      "mode": "subdomain"
+    }
   },
   "cats": [
     {
