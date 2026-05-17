@@ -1,0 +1,7 @@
+node_modules/
+dist/
+services.json
+.claude/
+*.local
+.env
+.env.*
